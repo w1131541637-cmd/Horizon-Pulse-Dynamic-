@@ -1,0 +1,938 @@
+doctype html>
+<html lang="pt-BR" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horizon Dynamics Presentation</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Manrope:wght@400;500;700;800&display=swap');
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: #071315;
+      color: #f3fbf8;
+    }
+
+    .deck-shell {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background:
+        radial-gradient(circle at 20% 12%, rgba(67, 255, 202, 0.22), transparent 26%),
+        radial-gradient(circle at 80% 18%, rgba(255, 190, 70, 0.18), transparent 28%),
+        linear-gradient(135deg, #071315 0%, #0b2427 42%, #020707 100%);
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .18;
+      background-image:
+        linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: radial-gradient(circle at center, black, transparent 82%);
+      z-index: 0;
+    }
+
+    .deck-stage {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 28px;
+      gap: 18px;
+    }
+
+    .slide-frame {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      aspect-ratio: 16 / 9;
+      border-radius: 34px;
+      overflow: hidden;
+      position: relative;
+      background: #0b1f22;
+      border: 1px solid rgba(111, 255, 220, .2);
+      box-shadow: 0 26px 90px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 54px;
+      display: none;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(67,255,202,.18), transparent 28%),
+        radial-gradient(circle at 85% 16%, rgba(255,193,74,.14), transparent 26%),
+        linear-gradient(135deg, #071315, #0b2327 55%, #020706);
+    }
+
+    .slide.active {
+      display: flex;
+      animation: reveal .55s ease both;
+    }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(14px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .slide-number {
+      position: absolute;
+      right: 34px;
+      bottom: 28px;
+      color: rgba(243,251,248,.55);
+      font-size: 13px;
+      letter-spacing: .18em;
+      font-weight: 800;
+    }
+
+    .brand-font {
+      font-family: 'Syne', sans-serif;
+    }
+
+    .glow-line {
+      height: 4px;
+      width: 138px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #43ffca, #ffc14a);
+      box-shadow: 0 0 28px rgba(67,255,202,.55);
+    }
+
+    .logo-mark {
+      width: 142px;
+      height: 142px;
+      border-radius: 36px;
+      background:
+        conic-gradient(from 130deg, #43ffca, #ffc14a, #43ffca);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 54px rgba(67,255,202,.28);
+      position: relative;
+    }
+
+    .logo-mark::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 28px;
+      background: #071315;
+    }
+
+    .logo-core {
+      position: relative;
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      border: 7px solid #43ffca;
+      border-right-color: #ffc14a;
+      transform: rotate(-28deg);
+    }
+
+    .logo-core::after {
+      content: "";
+      position: absolute;
+      width: 50px;
+      height: 8px;
+      border-radius: 99px;
+      background: #ffc14a;
+      right: -28px;
+      top: 30px;
+      box-shadow: -54px 0 0 #43ffca;
+    }
+
+    .kicker {
+      text-transform: uppercase;
+      letter-spacing: .22em;
+      color: #43ffca;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .hero-title {
+      font-size: clamp(46px, 7vw, 94px);
+      line-height: .9;
+      letter-spacing: -0.07em;
+    }
+
+    .hero-title span {
+      color: #43ffca;
+      text-shadow: 0 0 34px rgba(67,255,202,.28);
+    }
+
+    .glass-card {
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 28px;
+      padding: 26px;
+      backdrop-filter: blur(14px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .metric-card {
+      background: linear-gradient(135deg, rgba(67,255,202,.13), rgba(255,193,74,.07));
+      border: 1px solid rgba(67,255,202,.22);
+      border-radius: 24px;
+      padding: 20px;
+    }
+
+    .big-heading {
+      font-size: clamp(34px, 4.7vw, 62px);
+      line-height: .95;
+      letter-spacing: -0.055em;
+    }
+
+    .body-copy {
+      color: rgba(243,251,248,.82);
+      line-height: 1.62;
+      font-size: clamp(14px, 1.6vw, 19px);
+    }
+
+    .small-copy {
+      color: rgba(243,251,248,.7);
+      line-height: 1.5;
+      font-size: clamp(12px, 1.25vw, 15px);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: rgba(67,255,202,.1);
+      color: #dffff6;
+      border: 1px solid rgba(67,255,202,.25);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .nav-panel {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      color: #f3fbf8;
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid rgba(67,255,202,.28);
+      background: rgba(255,255,255,.06);
+      color: #f3fbf8;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-weight: 800;
+      transition: .2s ease;
+      min-width: 132px;
+    }
+
+    .nav-btn:hover {
+      background: rgba(67,255,202,.14);
+      transform: translateY(-1px);
+    }
+
+    .nav-btn:focus-visible, .dot:focus-visible {
+      outline: 3px solid #ffc14a;
+      outline-offset: 3px;
+    }
+
+    .dot-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 99px;
+      background: rgba(243,251,248,.28);
+      border: none;
+      transition: .2s ease;
+    }
+
+    .dot.active {
+      width: 30px;
+      background: #43ffca;
+      box-shadow: 0 0 16px rgba(67,255,202,.65);
+    }
+
+    .corner-text {
+      position: absolute;
+      max-width: 48%;
+    }
+
+    .city-scene {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .city-scene::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(7, 19, 21, 0.85) 0%, rgba(7, 19, 21, 0.4) 60%, transparent 100%);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .sky-orbit {
+      display: none;
+    }
+
+    .building {
+      display: none;
+    }
+
+    .building::after {
+      display: none;
+    }
+
+    .b1 { display: none; }
+    .b2 { display: none; }
+    .b3 { display: none; }
+    .b4 { display: none; }
+    .b5 { display: none; }
+    .b6 { display: none; }
+    .b7 { display: none; }
+    .b8 { display: none; }
+
+    .road {
+      display: none;
+    }
+
+    .road::before {
+      display: none;
+    }
+
+    .vehicle, .ship, .plane, .heli, .drone, .robot, .client {
+      display: none;
+    }
+
+    .plane {
+      display: none;
+    }
+
+    .heli {
+      display: none;
+    }
+
+    .heli::before {
+      display: none;
+    }
+
+    .heli::after {
+      display: none;
+    }
+
+    .drone {
+      display: none;
+    }
+
+    .drone::before, .drone::after {
+      display: none;
+    }
+
+    .ship {
+      display: none;
+    }
+
+    .vehicle {
+      display: none;
+    }
+
+    .vehicle::before, .vehicle::after {
+      display: none;
+    }
+
+    .van { display: none; }
+    .car { display: none; }
+    .truck { display: none; }
+
+    .truck::after {
+      display: none;
+    }
+
+    .robot {
+      display: none;
+    }
+
+    .robot::before {
+      display: none;
+    }
+
+    .box {
+      display: none;
+    }
+
+    .box::after {
+      display: none;
+    }
+
+    .client {
+      display: none;
+    }
+
+    .client::before {
+      display: none;
+    }
+
+    .fourp-letter {
+      font-size: clamp(90px, 17vw, 210px);
+      line-height: .8;
+      color: rgba(67,255,202,.15);
+      position: absolute;
+      right: 42px;
+      bottom: 20px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+    }
+
+    @media (max-width: 760px) {
+      .deck-stage {
+        padding: 14px;
+      }
+
+      .slide {
+        padding: 28px;
+      }
+
+      .slide-frame {
+        border-radius: 22px;
+      }
+
+      .logo-mark {
+        width: 94px;
+        height: 94px;
+        border-radius: 26px;
+      }
+
+      .logo-core {
+        width: 50px;
+        height: 50px;
+        border-width: 5px;
+      }
+
+      .nav-panel {
+        flex-direction: column;
+      }
+
+      .nav-btn {
+        min-width: 110px;
+        padding: 10px 12px;
+      }
+
+      .corner-text {
+        max-width: 80%;
+      }
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div class="deck-shell h-full w-full overflow-auto" id="app">
+   <div class="grain"></div>
+   <main class="deck-stage h-full w-full" aria-label="Apresentação Horizon Dynamics">
+    <section class="slide-frame" aria-live="polite">
+     <!-- Slide 1 -->
+     <article class="slide active" data-slide="0">
+      <div class="absolute inset-0 opacity-70">
+       <div class="absolute left-[7%] top-[16%] w-[32%] h-[42%] rounded-full blur-3xl" style="background: rgba(67,255,202,.18);"></div>
+       <div class="absolute right-[9%] bottom-[10%] w-[34%] h-[42%] rounded-full blur-3xl" style="background: rgba(255,193,74,.16);"></div>
+      </div>
+      <div class="relative z-10 flex w-full h-full items-center justify-between gap-10">
+       <div class="max-w-[68%]">
+        <p class="kicker mb-5">Canadá • Brasil • Mundo</p>
+        <h1 class="hero-title brand-font font-extrabold mb-7"><span id="company-name-cover">Horizon Dynamics</span><br>
+          entrega o futuro.</h1>
+        <p id="tagline-cover" class="body-copy max-w-2xl">Logística intercontinental movida pelo futuro</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+         <span class="chip"><i data-lucide="plane"></i> Aéreo</span> <span class="chip"><i data-lucide="ship"></i> Marítimo</span> <span class="chip"><i data-lucide="cpu"></i> IA e robotização</span>
+        </div>
+       </div>
+       <div class="flex flex-col items-center gap-5">
+        <div class="logo-mark" aria-label="Logo Horizon Dynamics">
+         <div class="logo-core"></div>
+        </div>
+        <p class="brand-font font-bold tracking-[.28em] text-sm text-center text-[#43ffca]">HORIZON<br>
+          DYNAMICS</p>
+       </div>
+      </div>
+      <div class="slide-number">
+       01 / 11
+      </div>
+     </article><!-- Slide 2 -->
+     <article class="slide" data-slide="1">
+      <div class="flex flex-col justify-center w-full h-full">
+       <div class="glow-line mb-7"></div>
+       <h2 id="intro-title" class="big-heading brand-font font-extrabold mb-6">Bem-Vindos,</h2>
+       <div class="grid grid-cols-2 gap-6">
+        <div class="glass-card">
+         <p class="body-copy">Somos uma operadora de logística intercontinental canadense criada para levar velocidade, tecnologia e confiança para empresas que precisam se mover no ritmo do mundo.</p>
+         <p class="body-copy mt-4">A Horizon Dynamics une logística integrada, inteligência artificial, robotização e frota multimodal para criar uma experiência de entrega rápida, dinâmica e preparada para diferentes mercados.</p>
+        </div>
+        <div class="grid gap-4">
+         <div class="metric-card">
+          <p class="kicker">Atuação</p>
+          <h3 class="brand-font text-3xl font-extrabold mt-2">Intercontinental</h3>
+          <p class="small-copy mt-2">Matriz canadense, operação conectada e adaptação às leis, moedas e culturas locais.</p>
+         </div>
+         <div class="metric-card">
+          <p class="kicker">Clientes</p>
+          <h3 class="brand-font text-3xl font-extrabold mt-2">B2B + B2C</h3>
+          <p class="small-copy mt-2">Foco em empresas, sem deixar de atender entregas rápidas e pequenas ao consumidor final.</p>
+         </div>
+        </div>
+       </div>
+      </div>
+      <div class="slide-number">
+       02 / 11
+      </div>
+     </article><!-- Slide 3 -->
+     <article class="slide" data-slide="2">
+      <div class="corner-text left-[54px] top-[52px]">
+       <p class="kicker">Razão social</p>
+       <h2 id="legal-name-display" class="brand-font text-4xl font-extrabold leading-tight mt-3">Horizon Pulse Dynamics Inc.</h2>
+      </div>
+      <div class="absolute left-1/2 top-1/2 w-[38%] h-[38%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#43ffca]/30 grid place-items-center">
+       <div class="logo-mark scale-90">
+        <div class="logo-core"></div>
+       </div>
+      </div>
+      <div class="corner-text right-[54px] bottom-[72px] text-right">
+       <p class="kicker">Nome fantasia</p>
+       <h2 id="company-name-display" class="brand-font text-5xl font-extrabold leading-tight mt-3 text-[#43ffca]">Horizon Dynamics</h2>
+      </div>
+      <div class="absolute left-[54px] bottom-[64px] max-w-[40%]">
+       <p class="small-copy">Uma marca feita para transmitir horizonte, movimento, precisão e energia constante em cada entrega.</p>
+      </div>
+      <div class="slide-number">
+       03 / 11
+      </div>
+     </article><!-- Slide 4 -->
+     <article class="slide" data-slide="3">
+      <div class="grid grid-cols-[1.05fr_.95fr] gap-7 items-center w-full h-full">
+       <div>
+        <p class="kicker mb-4">Estrutura empresarial</p>
+        <h2 class="big-heading brand-font font-extrabold mb-6">Natureza jurídica e política da empresa</h2>
+        <p class="body-copy">A Horizon Pulse Dynamics Inc. nasce sob o modelo canadense de corporação <strong>Inc.</strong>, equivalente à estrutura de <strong>S.A.</strong> no Brasil. Em território brasileiro, atua como subsidiária canadense com CNPJ ativo e filiais estratégicas.</p>
+       </div>
+       <div class="glass-card">
+        <h3 class="brand-font text-3xl font-extrabold mb-4 text-[#43ffca]">Nossa política</h3>
+        <p class="body-copy">Crescer com responsabilidade, unindo performance, sustentabilidade e inovação. A empresa prioriza veículos automatizados e elétricos, redução de impacto ambiental, adaptação cultural e respeito às normas locais em cada operação.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+         <span class="chip"><i data-lucide="leaf"></i> Sustentabilidade</span> <span class="chip"><i data-lucide="network"></i> Integração global</span> <span class="chip"><i data-lucide="shield-check"></i> Conformidade</span>
+        </div>
+       </div>
+      </div>
+      <div class="slide-number">
+       04 / 11
+      </div>
+     </article><!-- Slide 5 -->
+     <article class="slide" data-slide="4">
+      <div class="w-full h-full flex flex-col justify-center">
+       <p class="kicker mb-4">Essência da marca</p>
+       <h2 class="big-heading brand-font font-extrabold mb-8">Missão, visão e valores</h2>
+       <div class="grid grid-cols-3 gap-5">
+        <div class="glass-card">
+         <i data-lucide="target" class="text-[#43ffca] mb-5" style="width:38px;height:38px;"></i>
+         <h3 id="mission-title" class="brand-font text-3xl font-extrabold mb-4">Missão</h3>
+         <p class="small-copy">Entregar o melhor serviço de logística, unindo tecnologia, agilidade e cuidado humano para transformar cada entrega em uma experiência confiável.</p>
+        </div>
+        <div class="glass-card">
+         <i data-lucide="telescope" class="text-[#ffc14a] mb-5" style="width:38px;height:38px;"></i>
+         <h3 id="vision-title" class="brand-font text-3xl font-extrabold mb-4">Visão</h3>
+         <p class="small-copy">Enxergar o futuro antes dele chegar e oferecer serviços ágeis, modernos e tecnológicos, tornando-se referência mundial em logística.</p>
+        </div>
+        <div class="glass-card">
+         <i data-lucide="heart-handshake" class="text-[#43ffca] mb-5" style="width:38px;height:38px;"></i>
+         <h3 id="values-title" class="brand-font text-3xl font-extrabold mb-4">Valores</h3>
+         <p class="small-copy">Diversidade, inclusão, sustentabilidade, inovação, desenvolvimento dos colaboradores, respeito e mérito sempre em primeiro lugar.</p>
+        </div>
+       </div>
+      </div>
+      <div class="slide-number">
+       05 / 11
+      </div>
+     </article><!-- Slide 6 -->
+     <article class="slide" data-slide="5">
+      <div class="grid grid-cols-[.9fr_1.1fr] gap-8 items-center w-full h-full">
+       <div>
+        <p class="kicker mb-4">O que nos torna diferentes</p>
+        <h2 id="differential-title" class="big-heading brand-font font-extrabold mb-6">Nosso diferencial competitivo</h2>
+        <p class="body-copy">A Horizon Dynamics se destaca por entregar velocidade com tecnologia real: IA, robotização, frota própria e veículos autônomos em fase de teste.</p>
+       </div>
+       <div class="grid grid-cols-2 gap-4">
+        <div class="metric-card">
+         <i data-lucide="brain-circuit" class="text-[#43ffca] mb-3"></i>
+         <h3 class="brand-font text-2xl font-extrabold">IA aplicada</h3>
+         <p class="small-copy mt-2">Rotas inteligentes, previsão de demanda e tomada de decisão mais rápida.</p>
+        </div>
+        <div class="metric-card">
+         <i data-lucide="truck" class="text-[#ffc14a] mb-3"></i>
+         <h3 class="brand-font text-2xl font-extrabold">Frota elétrica</h3>
+         <p class="small-copy mt-2">Carretas, vans e veículos circulares com foco sustentável.</p>
+        </div>
+        <div class="metric-card">
+         <i data-lucide="plane" class="text-[#43ffca] mb-3"></i>
+         <h3 class="brand-font text-2xl font-extrabold">Multimodal</h3>
+         <p class="small-copy mt-2">Aviões, helicópteros, navios, drones aéreos, terrestres e fluviais.</p>
+        </div>
+        <div class="metric-card">
+         <i data-lucide="sparkles" class="text-[#ffc14a] mb-3"></i>
+         <h3 class="brand-font text-2xl font-extrabold">Experiência</h3>
+         <p class="small-copy mt-2">Entrega rápida, rastreável, premium e pensada para encantar o cliente.</p>
+        </div>
+       </div>
+      </div>
+      <div class="slide-number">
+       06 / 11
+      </div>
+     </article><!-- Slide 7 -->
+    <article class="slide" data-slide="6">
+      <div class="city-scene">
+       <img src="imagens/foto-perfil.png" alt="Pátio logístico com caminhões enfileirados e um avião pousando sob o céu nublado ao anoitecer" class="absolute inset-0 w-full h-full object-cover">
+       
+       <div class="relative z-10 left-[50px] top-[44px] max-w-[410px]">
+        <p class="kicker">Marketing visual</p>
+        <h2 class="brand-font text-5xl font-extrabold leading-none mt-3">A cidade conectada pela Horizon</h2>
+        <p class="small-copy mt-4">Entrega limpa, inteligente e intercontinental — do céu ao mar, da rua até a porta do cliente.</p>
+       </div>
+      </div>
+      <div class="slide-number">07 / 11</div>
+     </article>
+      </div>
+      <div class="slide-number">
+       07 / 11
+      </div>
+     </article><!-- Slide 8 -->
+     <article class="slide fourp-slide" data-slide="7">
+      <div class="fourp-letter">
+       P
+      </div>
+      <div class="max-w-[72%] self-center">
+       <p class="kicker mb-4">4P’s do marketing</p>
+       <h2 id="fourps-place-title" class="big-heading brand-font font-extrabold mb-5">Praça</h2>
+       <div class="glass-card">
+        <p id="fourps-place" class="body-copy">A Horizon Dynamics oferece um serviço completo de logística intercontinental integrada e inteligente, que combina tecnologia de ponta (IA, robotização e automação) com uma frota multimodal sustentável. Contamos com carretas elétricas e autônomas, aviões, helicópteros, navios e drones aéreos, terrestres e fluviais, todos integrados por inteligência artificial para oferecer o melhor desempenho em velocidade, rastreamento em tempo real, visibilidade total da carga e redução de emissões de carbono. Atuamos principalmente no modelo B2B, com soluções personalizadas para grandes empresas, e também atendemos o segmento B2C em entregas rápidas e expressas.</p>
+       </div>
+      </div>
+      <div class="slide-number">
+       08 / 11
+      </div>
+     </article><!-- Slide 9 -->
+     <article class="slide fourp-slide" data-slide="8">
+      <div class="fourp-letter">
+       P
+      </div>
+      <div class="max-w-[72%] self-center">
+       <p class="kicker mb-4">4P’s do marketing</p>
+       <h2 id="fourps-promotion-title" class="big-heading brand-font font-extrabold mb-5">Promoção</h2>
+       <div class="glass-card">
+        <p id="fourps-promotion" class="body-copy">A comunicação da Horizon Dynamics é direcionada principalmente a decisores corporativos (B2B), destacando tecnologia, sustentabilidade e resultados mensuráveis. Utilizamos LinkedIn Ads, Google Ads, SEO, conteúdo técnico (vídeos, cases de sucesso e whitepapers) e participação em feiras internacionais de logística e tecnologia. A força de vendas atua de forma consultiva, apresentando demonstrações personalizadas da plataforma de IA. A mensagem central reforça que a Horizon Dynamics entrega a logística intercontinental mais rápida, inteligente e sustentável do mercado.</p>
+       </div>
+      </div>
+      <div class="slide-number">
+       09 / 11
+      </div>
+     </article><!-- Slide 10 -->
+     <article class="slide fourp-slide" data-slide="9">
+      <div class="fourp-letter">
+       P
+      </div>
+      <div class="max-w-[72%] self-center">
+       <p class="kicker mb-4">4P’s do marketing</p>
+       <h2 id="fourps-price-title" class="big-heading brand-font font-extrabold mb-5">Preço</h2>
+       <div class="glass-card">
+        <p id="fourps-price" class="body-copy">A precificação é baseada em <strong>valor</strong>, posicionando a Horizon Dynamics como uma solução premium que justifica o investimento pela velocidade superior, menor risco operacional, previsibilidade e sustentabilidade. Trabalhamos com modelos flexíveis por volume, rota ou contrato anual, tiers de serviço (Standard, Express, Premium e Enterprise), preços dinâmicos via IA e bônus de performance (como pontualidade acima de 99%). Oferecemos descontos progressivos por volume e fidelidade, além da opção de entrega Carbon Neutral, reforçando o compromisso ambiental sem perder competitividade.</p>
+       </div>
+      </div>
+      <div class="slide-number">
+       10 / 11
+      </div>
+     </article><!-- Slide 11 -->
+     <article class="slide fourp-slide" data-slide="10">
+      <div class="fourp-letter">
+       P
+      </div>
+      <div class="max-w-[72%] self-center">
+       <p class="kicker mb-4">4P’s do marketing</p>
+       <h2 id="fourps-product-title" class="big-heading brand-font font-extrabold mb-5">Produto</h2>
+       <div class="glass-card">
+        <p id="fourps-product" class="body-copy">A Horizon Dynamics possui cobertura global, com matriz no Canadá, centros de distribuição estratégicos e operações adaptadas às particularidades de cada país. Nossa distribuição é fortemente digital: clientes B2B e B2C acessam todos os serviços por meio de um site próprio e aplicativo intuitivo, com rastreamento em tempo real, agendamento, integração via API e dashboards personalizados. Mantemos espaços físicos para retirada de cargas nos centros de distribuição, porém não operamos lojas ou pontos de atendimento presenciais para o público final — o foco é na eficiência operacional e na experiência digital completa.</p>
+       </div>
+      </div>
+      <div class="slide-number">
+       11 / 11
+      </div>
+     </article>
+    </section>
+    <nav class="nav-panel" aria-label="Controles da apresentação">
+     <button class="nav-btn" id="prevBtn" type="button"> <i data-lucide="chevron-left"></i> Voltar </button>
+     <div class="dot-row" id="dotRow" aria-label="Selecionar slide"></div><button class="nav-btn" id="nextBtn" type="button"> Avançar <i data-lucide="chevron-right"></i> </button>
+    </nav>
+   </main>
+  </div>
+  <script>
+    const defaultConfig = {
+      background_color: "#071315",
+      surface_color: "#0b1f22",
+      text_color: "#f3fbf8",
+      primary_action_color: "#43ffca",
+      secondary_action_color: "#ffc14a",
+      font_family: "Syne",
+      font_size: 16,
+      company_name: "Horizon Dynamics",
+      legal_name: "Horizon Pulse Dynamics Inc.",
+      tagline: "Logística intercontinental movida pelo futuro",
+      intro_title: "Bem-Vindos,",
+      mission_title: "Missão",
+      vision_title: "Visão",
+      values_title: "Valores",
+      differential_title: "Nosso diferencial competitivo",
+      fourps_place_title: "Praça",
+      fourps_place: "A Horizon Dynamics oferece um serviço completo de logística intercontinental integrada e inteligente, que combina tecnologia de ponta (IA, robotização e automação) com uma frota multimodal sustentável. Contamos com carretas elétricas e autônomas, aviões, helicópteros, navios e drones aéreos, terrestres e fluviais, todos integrados por inteligência artificial para oferecer o melhor desempenho em velocidade, rastreamento em tempo real, visibilidade total da carga e redução de emissões de carbono. Atuamos principalmente no modelo B2B, com soluções personalizadas para grandes empresas, e também atendemos o segmento B2C em entregas rápidas e expressas.",
+      fourps_promotion_title: "Promoção",
+      fourps_promotion: "A comunicação da Horizon Dynamics é direcionada principalmente a decisores corporativos (B2B), destacando tecnologia, sustentabilidade e resultados mensuráveis. Utilizamos LinkedIn Ads, Google Ads, SEO, conteúdo técnico (vídeos, cases de sucesso e whitepapers) e participação em feiras internacionais de logística e tecnologia. A força de vendas atua de forma consultiva, apresentando demonstrações personalizadas da plataforma de IA. A mensagem central reforça que a Horizon Dynamics entrega a logística intercontinental mais rápida, inteligente e sustentável do mercado.",
+      fourps_price_title: "Preço",
+      fourps_price: "A precificação é baseada em valor, posicionando a Horizon Dynamics como uma solução premium que justifica o investimento pela velocidade superior, menor risco operacional, previsibilidade e sustentabilidade. Trabalhamos com modelos flexíveis por volume, rota ou contrato anual, tiers de serviço (Standard, Express, Premium e Enterprise), preços dinâmicos via IA e bônus de performance (como pontualidade acima de 99%). Oferecemos descontos progressivos por volume e fidelidade, além da opção de entrega Carbon Neutral, reforçando o compromisso ambiental sem perder competitividade.",
+      fourps_product_title: "Produto",
+      fourps_product: "A Horizon Dynamics possui cobertura global, com matriz no Canadá, centros de distribuição estratégicos e operações adaptadas às particularidades de cada país. Nossa distribuição é fortemente digital: clientes B2B e B2C acessam todos os serviços por meio de um site próprio e aplicativo intuitivo, com rastreamento em tempo real, agendamento, integração via API e dashboards personalizados. Mantemos espaços físicos para retirada de cargas nos centros de distribuição, porém não operamos lojas ou pontos de atendimento presenciais para o público final — o foco é na eficiência operacional e na experiência digital completa."
+    };
+
+    let currentSlide = 0;
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const dotRow = document.getElementById("dotRow");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    slides.forEach((_, index) => {
+      const button = document.createElement("button");
+      button.className = "dot";
+      button.type = "button";
+      button.setAttribute("aria-label", `Ir para o slide ${index + 1}`);
+      button.addEventListener("click", () => showSlide(index));
+      dotRow.appendChild(button);
+    });
+
+    const dots = Array.from(document.querySelectorAll(".dot"));
+
+    function showSlide(index) {
+      currentSlide = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle("active", slideIndex === currentSlide);
+      });
+      dots.forEach((dot, dotIndex) => {
+        dot.classList.toggle("active", dotIndex === currentSlide);
+      });
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === slides.length - 1;
+      prevBtn.style.opacity = prevBtn.disabled ? ".45" : "1";
+      nextBtn.style.opacity = nextBtn.disabled ? ".45" : "1";
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    prevBtn.addEventListener("click", () => showSlide(currentSlide - 1));
+    nextBtn.addEventListener("click", () => showSlide(currentSlide + 1));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight") showSlide(currentSlide + 1);
+      if (event.key === "ArrowLeft") showSlide(currentSlide - 1);
+    });
+
+    function applyConfig(config) {
+      const cfg = { ...defaultConfig, ...config };
+      const baseFont = cfg.font_family || defaultConfig.font_family;
+      const fontStack = `${baseFont}, Manrope, sans-serif`;
+      const baseSize = Number(cfg.font_size || defaultConfig.font_size);
+
+      document.body.style.background = cfg.background_color;
+      document.body.style.color = cfg.text_color;
+      document.body.style.fontFamily = fontStack;
+
+      document.querySelector(".deck-shell").style.background = `
+        radial-gradient(circle at 20% 12%, ${hexToRgba(cfg.primary_action_color, 0.22)}, transparent 26%),
+        radial-gradient(circle at 80% 18%, ${hexToRgba(cfg.secondary_action_color, 0.18)}, transparent 28%),
+        linear-gradient(135deg, ${cfg.background_color} 0%, #0b2427 42%, #020707 100%)
+      `;
+
+      document.querySelectorAll(".slide-frame, .slide").forEach(el => {
+        el.style.backgroundColor = cfg.surface_color;
+        el.style.color = cfg.text_color;
+      });
+
+      document.querySelectorAll(".brand-font, h1, h2, h3, p, button, span").forEach(el => {
+        el.style.fontFamily = fontStack;
+      });
+
+      document.querySelectorAll(".kicker").forEach(el => {
+        el.style.color = cfg.primary_action_color;
+        el.style.fontSize = `${baseSize * 0.82}px`;
+      });
+
+      document.querySelectorAll(".body-copy").forEach(el => {
+        el.style.fontSize = `${baseSize * 1.08}px`;
+      });
+
+      document.querySelectorAll(".small-copy").forEach(el => {
+        el.style.fontSize = `${baseSize * 0.88}px`;
+      });
+
+      document.querySelectorAll(".big-heading").forEach(el => {
+        el.style.fontSize = `${baseSize * 3.35}px`;
+      });
+
+      document.querySelectorAll(".hero-title").forEach(el => {
+        el.style.fontSize = `${baseSize * 5.1}px`;
+      });
+
+      document.querySelectorAll(".glass-card").forEach(el => {
+        el.style.backgroundColor = hexToRgba(cfg.surface_color, 0.72);
+        el.style.borderColor = hexToRgba(cfg.text_color, 0.13);
+      });
+
+      document.querySelectorAll(".metric-card").forEach(el => {
+        el.style.borderColor = hexToRgba(cfg.primary_action_color, 0.26);
+        el.style.background = `linear-gradient(135deg, ${hexToRgba(cfg.primary_action_color, 0.13)}, ${hexToRgba(cfg.secondary_action_color, 0.08)})`;
+      });
+
+      document.querySelectorAll(".chip").forEach(el => {
+        el.style.backgroundColor = hexToRgba(cfg.primary_action_color, 0.10);
+        el.style.borderColor = hexToRgba(cfg.primary_action_color, 0.28);
+        el.style.color = cfg.text_color;
+      });
+
+      document.querySelectorAll(".nav-btn").forEach(el => {
+        el.style.borderColor = hexToRgba(cfg.primary_action_color, 0.28);
+        el.style.color = cfg.text_color;
+      });
+
+      document.querySelectorAll(".dot.active").forEach(el => {
+        el.style.backgroundColor = cfg.primary_action_color;
+      });
+
+      document.querySelectorAll(".glow-line").forEach(el => {
+        el.style.background = `linear-gradient(90deg, ${cfg.primary_action_color}, ${cfg.secondary_action_color})`;
+      });
+
+      document.querySelectorAll(".logo-mark").forEach(el => {
+        el.style.background = `conic-gradient(from 130deg, ${cfg.primary_action_color}, ${cfg.secondary_action_color}, ${cfg.primary_action_color})`;
+      });
+
+      document.querySelectorAll(".logo-core").forEach(el => {
+        el.style.borderColor = cfg.primary_action_color;
+        el.style.borderRightColor = cfg.secondary_action_color;
+      });
+
+      document.getElementById("company-name-cover").textContent = cfg.company_name;
+      document.getElementById("tagline-cover").textContent = cfg.tagline;
+      document.getElementById("intro-title").textContent = cfg.intro_title;
+      document.getElementById("legal-name-display").textContent = cfg.legal_name;
+      document.getElementById("company-name-display").textContent = cfg.company_name;
+      document.getElementById("mission-title").textContent = cfg.mission_title;
+      document.getElementById("vision-title").textContent = cfg.vision_title;
+      document.getElementById("values-title").textContent = cfg.values_title;
+      document.getElementById("differential-title").textContent = cfg.differential_title;
+
+      ["fourps-note-1", "fourps-note-2", "fourps-note-3", "fourps-note-4"].forEach(id => {
+        document.getElementById(id).textContent = cfg.fourps_note;
+      });
+    }
+
+    function hexToRgba(hex, alpha) {
+      const clean = hex.replace("#", "");
+      const bigint = parseInt(clean, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          applyConfig(config);
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => window.elementSdk.setConfig({ background_color: value })
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => window.elementSdk.setConfig({ surface_color: value })
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => window.elementSdk.setConfig({ text_color: value })
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => window.elementSdk.setConfig({ primary_action_color: value })
+            },
+            {
+              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+              set: (value) => window.elementSdk.setConfig({ secondary_action_color: value })
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => window.elementSdk.setConfig({ font_family: value })
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => window.elementSdk.setConfig({ font_size: value })
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["company_name", config.company_name || defaultConfig.company_name],
+          ["legal_name", config.legal_name || defaultConfig.legal_name],
+          ["tagline", config.tagline || defaultConfig.tagline],
+          ["intro_title", config.intro_title || defaultConfig.intro_title],
+          ["mission_title", config.mission_title || defaultConfig.mission_title],
+          ["vision_title", config.vision_title || defaultConfig.vision_title],
+          ["values_title", config.values_title || defaultConfig.values_title],
+          ["differential_title", config.differential_title || defaultConfig.differential_title],
+          ["fourps_note", config.fourps_note || defaultConfig.fourps_note]
+        ])
+      });
+    } else {
+      applyConfig(defaultConfig);
+    }
+
+    showSlide(0);
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ff047bc746c5efb',t:'MTc3OTMzMTg5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
